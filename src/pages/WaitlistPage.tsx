@@ -60,57 +60,6 @@ export default function WaitlistPage() {
     };
   }, []);
 
-  useEffect(() => {
-    const handleTallyMessage = async (e: MessageEvent) => {
-      let data;
-      try {
-        data = typeof e.data === "string" ? JSON.parse(e.data) : e.data;
-      } catch (err) {
-        return; // Ignore messages that aren't valid JSON or format
-      }
-
-      const isTallySubmission = data && (
-        data.event === "Tally.FormSubmitted" ||
-        data.type === "Tally.FormSubmitted" ||
-        data.action === "Tally.FormSubmitted" ||
-        e.data === "Tally.FormSubmitted"
-      );
-
-      if (isTallySubmission) {
-        console.log("Tally Form Submitted:", data);
-        
-        try {
-          // Forward submission to RudderStack CDP webhook
-          const response = await fetch("https://hosted.rudderlabs.com/v1/webhook?writeKey=3GoZwvsZLVQRNsg5z0hmIphraBE", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              event: "Tally.FormSubmitted",
-              formId: (data && data.formId) || TALLY_FORM_ID,
-              payload: (data && (data.data || data)) || {},
-              timestamp: new Date().toISOString(),
-            }),
-          });
-          
-          if (response.ok) {
-            console.log("Successfully forwarded Tally submission to RudderStack CDP!");
-          } else {
-            console.warn("Failed to post to RudderStack CDP:", response.status, response.statusText);
-          }
-        } catch (error) {
-          console.error("Error posting Tally submission to RudderStack CDP:", error);
-        }
-      }
-    };
-
-    window.addEventListener("message", handleTallyMessage);
-    return () => {
-      window.removeEventListener("message", handleTallyMessage);
-    };
-  }, []);
-
   const tallyUrl = `https://tally.so/embed/${TALLY_FORM_ID}?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1`;
 
   return (

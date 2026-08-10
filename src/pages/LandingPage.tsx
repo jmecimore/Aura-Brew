@@ -212,6 +212,10 @@ export default function LandingPage() {
       {/* Ecosystem Section */}
       <section id="ecosystem" className="py-32">
         <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <h2 className="text-sm font-bold text-amber-500 uppercase tracking-[0.3em] mb-4">Integrated Hardware</h2>
+            <h3 className="text-4xl md:text-5xl font-bold tracking-tight">The Aura Ecosystem</h3>
+          </div>
           <div className="grid lg:grid-cols-2 gap-12">
             {/* Aura Ring */}
             <div className="group relative rounded-[2.5rem] overflow-hidden bg-carbon border border-white/10 p-12 flex flex-col justify-between min-h-[500px]">
@@ -275,6 +279,10 @@ export default function LandingPage() {
       {/* Features Grid */}
       <section id="features" className="py-32 bg-white/[0.02]">
         <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <h2 className="text-sm font-bold text-amber-500 uppercase tracking-[0.3em] mb-4">Autonomous Excellence</h2>
+            <h3 className="text-4xl md:text-5xl font-bold tracking-tight">Engineered for Peak State</h3>
+          </div>
           <div className="grid md:grid-cols-3 gap-12">
             <div className="space-y-6">
               <div className="w-14 h-14 bg-amber-500/10 rounded-2xl flex items-center justify-center text-amber-500">
