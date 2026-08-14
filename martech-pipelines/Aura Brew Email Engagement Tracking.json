@@ -1,0 +1,86 @@
+{
+  "name": "Aura Brew Email Engagement Tracking",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "5429b291-d743-4e99-8511-f75c2e26bce5",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "07a71de7-cd63-44d9-af4c-74c4675b2ace",
+      "name": "Webhook",
+      "webhookId": "5429b291-d743-4e99-8511-f75c2e26bce5"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "waitlist_leads",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "email",
+              "condition": "eq",
+              "keyValue": "={{ $json.body[0].email }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "status",
+              "fieldValue": "Engaged"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        224,
+        0
+      ],
+      "id": "8faa5113-ab20-4844-9d8f-c38f1f239be1",
+      "name": "Update a row",
+      "credentials": {
+        "supabaseApi": {
+          "id": "eRENbEBUPQ05TuAG",
+          "name": "Supabase account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Update a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "c15ec66c-0911-495c-b6e0-4f6f1d32dfea",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5f93741027f934b298365aa3b0b43f3226e60ff09ab927907313fd368b910f7d"
+  },
+  "nodeGroups": [],
+  "id": "H1vKkgfm3F6yfKvY",
+  "tags": []
+}
