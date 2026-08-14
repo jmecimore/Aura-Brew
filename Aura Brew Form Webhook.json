@@ -1,0 +1,184 @@
+{
+  "name": "Aura Brew Form Webhook",
+  "nodes": [
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.1-flash-lite",
+        "options": {}
+      },
+      "id": "f9e22294-16e6-4810-aa8d-2a7a205e4e2d",
+      "name": "Google Gemini Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        528,
+        336
+      ],
+      "credentials": {
+        "googlePalmApi": {
+          "id": "9o1qTrjKuR9vxJiR",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lead-capture",
+        "options": {}
+      },
+      "id": "efc92fed-7229-4d95-b3c2-22844f895dfc",
+      "name": "Tally Form Submission Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        112
+      ],
+      "webhookId": "0a4e0717-eb42-473f-a0ea-dd915dd7fd52"
+    },
+    {
+      "parameters": {
+        "tableId": "waitlist_leads",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "email",
+              "fieldValue": "={{ $json.body.traits.email }}"
+            },
+            {
+              "fieldId": "first_name",
+              "fieldValue": "={{ $json.body.traits['First Name'] }}"
+            },
+            {
+              "fieldId": "last_name",
+              "fieldValue": "={{ $json.body.traits['Last Name'] }}"
+            },
+            {
+              "fieldId": "state",
+              "fieldValue": "={{ $json.body.traits['State of Residence'] }}"
+            }
+          ]
+        }
+      },
+      "id": "78b6bd2e-9534-45a6-bacf-d7ecab0f4957",
+      "name": "Supabase - Insert Lead",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        224,
+        112
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "eRENbEBUPQ05TuAG",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=The user-provided State of Residence is: {{ $json.state }}",
+        "options": {
+          "systemMessage": "Using the user-provided State of Residence as the seed, draft a personalized message to include in a waitlist confirmation email for my intelligent, bio-activated coffee maker the Aura Brew.\nAs an example, for a user in North Carolina, an appropriate message would be \"We can't wait for you to experience a perfectly-timed, iced latte while you take in the salty air of the Outer Banks!\" or \"We can't wait for you to experience Peak State; overlooking the Smokey Mountains with a Cortado prepared just when your body needed it!\"\nThe goal is to deliver a message that is personalized to the user based on the state that they live in, conveying excitement that they are going to experience our product, with the message evoking something they could experience in that state while enjoying a coffee/espresso drink. Ideally the message will also reference a key attribute of the Aura Brew product.\nDo not output anything additional to the message, as this will be passed as text directly into the email that is being sent to the user."
+        }
+      },
+      "id": "9237381f-eb56-4f89-9fbe-b4337251d9f1",
+      "name": "Personalized Blurb - AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        448,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "mail",
+        "fromEmail": "jake@jake-mecimore.com",
+        "fromName": "Aura Brew",
+        "toEmail": "={{ $('Tally Form Submission Webhook').item.json.body.traits.email }}",
+        "subject": "Welcome to the Aura Brew Waitlist",
+        "contentType": "text/html",
+        "contentValue": "=<!DOCTYPE html>\n<html>\n<head>\n  <meta charset=\"utf-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>Aura Brew // Waitlist Confirmation</title>\n  <style>\n    /* Global Reset & Client Hacks */\n    body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }\n    table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }\n    img { -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }\n    \n    @media screen and (max-width: 600px) {\n      .container { width: 100% !important; padding: 15px !important; }\n      .card-body { padding: 24px 20px 10px 20px !important; }\n      .mobile-pad { padding: 10px 20px !important; }\n      .hero-heading { font-size: 28px !important; }\n    }\n  </style>\n</head>\n<body style=\"margin: 0; padding: 0; background-color: #050505; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased;\">\n\n  <!-- Outer Deep Void Background Canvas (#050505) -->\n  <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" style=\"background-color: #050505; padding: 40px 0;\">\n    <tr>\n      <td align=\"center\">\n\n        <!-- Main Container Card (Carbon Base #1a1a1a with Subtle Border) -->\n        <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"600\" class=\"container\" style=\"background-color: #1a1a1a; border-radius: 24px; border: 1px solid rgba(255, 255, 255, 0.1); overflow: hidden; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);\">\n          \n          <!-- Top Accent Light Bar (Gradient effect via background) -->\n          <tr>\n            <td style=\"height: 2px; background: linear-gradient(90deg, transparent 0%, #f59e0b 50%, transparent 100%); font-size: 0; line-height: 0;\">&nbsp;</td>\n          </tr>\n\n          <!-- Header / Brand Section -->\n          <tr>\n            <td align=\"center\" style=\"padding: 40px 40px 10px 40px;\">\n              <!-- Eyebrow Badge (Monospaced, Pill Tag, Amber Border) -->\n              <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n                <tr>\n                  <td style=\"background-color: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 9999px; padding: 4px 14px; font-family: monospace; font-size: 11px; font-weight: 700; color: #fbbf24; letter-spacing: 2px; text-transform: uppercase;\">\n                    BIOLOGICALLY SYNCED ENERGY\n                  </td>\n                </tr>\n              </table>\n\n              <!-- Hero Heading (Tight Tracked, Bold Display) -->\n              <h1 class=\"hero-heading\" style=\"margin: 20px 0 0 0; color: #ffffff; font-size: 34px; font-weight: 900; letter-spacing: -1.5px; text-transform: uppercase; line-height: 1.1;\">\n                AURA <span style=\"color: #f59e0b;\">BREW</span>\n              </h1>\n            </td>\n          </tr>\n\n          <!-- Builder's Note -->\n          <tr>\n            <td class=\"card-body\" style=\"padding: 24px 40px 15px 40px; color: #edeff0; font-size: 15px; line-height: 1.6;\">\n              <p style=\"margin-top: 0; color: #ffffff; font-size: 18px; font-weight: 700; letter-spacing: -0.3px;\">\n                Hey {{ $('Tally Form Submission Webhook').item.json.body.traits['First Name'] }},\n              </p>\n              <p>\n                Welcome to the waitlist. We are glad to have you as part of <span style=\"color:#fbbf24; font-weight: bold\">Team Aura Brew</span>. I'm currently heads-down finalizing the core experience; configuring system variables, fine-tuning extraction formulas, and making sure everything runs with absolute precision for launch.\n              </p>\n              <p style=\"margin-bottom: 0; color:#fbbf24;\">\n                {{ $json.output }}\n              </p>\n              <p style=\"margin-bottom: 0;\">\n                Rather than sending a generic status update, I want to build this in public and keep you directly looped into our engineering milestones as we approach operational readiness. We will proactively share progress updates and you can always check back on our site to see what we are up to.\n              </p>\n            </td>\n          </tr>\n\n          <!-- Call to Action (Amber Glow Pill Button) -->\n          <tr>\n            <td align=\"center\" style=\"padding: 10px 40px 45px 40px;\">\n              <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n                <tr>\n                  <td align=\"center\" style=\"border-radius: 9999px; background-color: #f59e0b; box-shadow: 0 0 20px rgba(245, 158, 11, 0.35);\">\n                    <a href=\"jake-mecimore.com\" target=\"_blank\" style=\"font-size: 13px; font-family: 'Inter', sans-serif; color: #050505; text-decoration: none; padding: 14px 32px; border-radius: 9999px; display: inline-block; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase;\">\n                      VISIT OUR SITE &rarr;\n                    </a>\n                  </td>\n                </tr>\n              </table>\n            </td>\n          </tr>\n\n          <!-- Signature Block -->\n          <tr>\n            <td class=\"mobile-pad\" style=\"padding: 15px 40px 30px 40px;\">\n              <div style=\"padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.08);\">\n                <span style=\"color: #ffffff; font-weight: 700; display: block; font-size: 15px;\">Jake Mecimore</span>\n                <span style=\"font-family: monospace; font-size: 12px; color: #f59e0b; letter-spacing: 1px; text-transform: uppercase;\">CREATOR // AURA BREW</span>\n              </div>\n            </td>\n          </tr>\n\n        </table>\n\n        <!-- Footer / Telemetry Data -->\n        <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"600\" class=\"container\">\n          <tr>\n            <td align=\"center\" style=\"padding: 24px 20px; color: #52525b; font-family: monospace; font-size: 11px; letter-spacing: 1px;\">\n              <p style=\"margin: 0 0 6px 0;\">AURA BREW INC. // #PEAKSTATE</p>\n              <p style=\"margin: 0; color: #3f3f46;\">&copy; 2026 AURA BREW. ALL RIGHTS RESERVED.</p>\n            </td>\n          </tr>\n        </table>\n\n      </td>\n    </tr>\n  </table>\n\n</body>\n</html>",
+        "additionalFields": {}
+      },
+      "id": "f6e30fea-52e8-472b-be42-9831ad354d59",
+      "name": "SendGrid - Send Welcome Email",
+      "type": "n8n-nodes-base.sendGrid",
+      "typeVersion": 1,
+      "position": [
+        800,
+        112
+      ],
+      "credentials": {
+        "sendGridApi": {
+          "id": "qXkexN7ecFf1kvzM",
+          "name": "SendGrid account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Personalized Blurb - AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tally Form Submission Webhook": {
+      "main": [
+        [
+          {
+            "node": "Supabase - Insert Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase - Insert Lead": {
+      "main": [
+        [
+          {
+            "node": "Personalized Blurb - AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Personalized Blurb - AI Agent": {
+      "main": [
+        [
+          {
+            "node": "SendGrid - Send Welcome Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "6c76c7fa-b420-44f0-9ab0-c256485d6a8c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5f93741027f934b298365aa3b0b43f3226e60ff09ab927907313fd368b910f7d"
+  },
+  "nodeGroups": [],
+  "id": "8lOqOmfHPWhp9TWq",
+  "tags": []
+}
